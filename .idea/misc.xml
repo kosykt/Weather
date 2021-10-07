@@ -3,8 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/ic_earth.xml" value="0.2140625" />
+        <entry key="app/src/main/res/drawable/ic_russia.xml" value="0.2140625" />
+        <entry key="app/src/main/res/drawable/ic_world.xml" value="0.2140625" />
+        <entry key="app/src/main/res/layout/details_fragment.xml" value="0.19791666666666666" />
         <entry key="app/src/main/res/layout/main_activity.xml" value="0.19791666666666666" />
         <entry key="app/src/main/res/layout/main_fragment.xml" value="0.1828125" />
+        <entry key="app/src/main/res/layout/main_recycler_item.xml" value="0.19791666666666666" />
       </map>
     </option>
   </component>

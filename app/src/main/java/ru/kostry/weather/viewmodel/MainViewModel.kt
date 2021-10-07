@@ -3,20 +3,32 @@ package ru.kostry.weather.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import ru.kostry.weather.model.AppState
+import ru.kostry.weather.model.repository.Repository
+import ru.kostry.weather.model.repository.RepositoryImpl
 import java.lang.Thread.sleep
 
-class MainViewModel(private val liveDataToObserve: MutableLiveData<Any> = MutableLiveData()) :
+class MainViewModel(private val repository: Repository = RepositoryImpl()) :
     ViewModel() {
 
-    fun getData(): LiveData<Any>{
-        getDataFromLocalSource()
-        return liveDataToObserve
-    }
+    private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData()
 
-    private fun getDataFromLocalSource() {
+    fun getData(): LiveData<AppState> = liveDataToObserve
+
+    fun getWeatherFromLocalSourceRus() = getDataFromLocalSource(isRussia = true)
+
+    fun getWeatherFromLocalSourceWorld() = getDataFromLocalSource(isRussia = false)
+
+    private fun getDataFromLocalSource(isRussia: Boolean) {
+        liveDataToObserve.value = AppState.Loading
         Thread {
-            sleep(2000)
-            liveDataToObserve.postValue(Any())
+            sleep(3000)
+            liveDataToObserve.postValue(
+                AppState.Success(
+                    if (isRussia) repository.getWeatherFromLocalStorageRus()
+                    else repository.getWeatherFromLocalStorageWorld()
+                )
+            )
         }.start()
     }
 }
