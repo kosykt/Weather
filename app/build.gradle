@@ -47,6 +47,9 @@ android {
 
 dependencies {
 
+    //OkHttp
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+
     implementation 'com.google.code.gson:gson:2.8.6'
 
     implementation 'androidx.core:core-ktx:1.6.0'
