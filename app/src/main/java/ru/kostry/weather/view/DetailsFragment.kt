@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import okhttp3.*
 import ru.kostry.weather.BuildConfig
 import ru.kostry.weather.R
@@ -94,6 +95,10 @@ class DetailsFragment : Fragment() {
                 feelsLikeValue.text = it.feelsLike.toString()
                 weatherCondition.text = it.condition
             }
+            Picasso
+                .get()
+                .load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
+                .into(headerIcon)
         }
     }
 
