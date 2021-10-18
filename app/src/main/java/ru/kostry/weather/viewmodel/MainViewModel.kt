@@ -8,15 +8,15 @@ import ru.kostry.weather.model.repository.Repository
 import ru.kostry.weather.model.repository.RepositoryImpl
 import java.lang.Thread.sleep
 
-class MainViewModel(private val repository: Repository = RepositoryImpl()) :
-    ViewModel() {
+class MainViewModel() : ViewModel() {
 
+    //хранит состояние загрузки
     private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData()
+    private val repository: Repository = RepositoryImpl()
 
     fun getData(): LiveData<AppState> = liveDataToObserve
 
     fun getWeatherFromLocalSourceRus() = getDataFromLocalSource(isRussia = true)
-
     fun getWeatherFromLocalSourceWorld() = getDataFromLocalSource(isRussia = false)
 
     private fun getDataFromLocalSource(isRussia: Boolean) {

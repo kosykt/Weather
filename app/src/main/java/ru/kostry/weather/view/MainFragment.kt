@@ -24,7 +24,9 @@ class MainFragment : Fragment() {
     private var _binding: MainFragmentBinding? = null
     private val binding
         get() = _binding!!
+    //добавляем адаптер
     private val adapter = MainFragmentAdapter()
+    //проверка на города
     private var isDataSetRus: Boolean = true
 
     override fun onCreateView(
@@ -36,10 +38,12 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        //переход между фрагментами
         adapter.setOnItemViewClickListener { weather ->
             activity?.supportFragmentManager?.apply {
                 beginTransaction()
                     .add(R.id.container, DetailsFragment.newInstance(Bundle().apply {
+                        //передача погоды в виде Bundle
                         putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
                     }))
                     .addToBackStack("")
@@ -47,17 +51,17 @@ class MainFragment : Fragment() {
             }
         }
 
+        //присваиваем свой созданный адаптер к RecyclerView в xml
         binding.mainFragmentRecyclerView.adapter = adapter
         binding.mainFragmentFAB.setOnClickListener {
             changeWeatherDataSet()
         }
-        val observer = Observer<AppState> { a ->
-            renderData(a)
-        }
+        val observer = Observer<AppState> { renderData(it) }
         viewModel.getData().observe(viewLifecycleOwner, observer)
         viewModel.getWeatherFromLocalSourceWorld()
     }
 
+    //изменяет список городов
     private fun changeWeatherDataSet() {
         if (isDataSetRus) {
             viewModel.getWeatherFromLocalSourceRus()
@@ -69,6 +73,7 @@ class MainFragment : Fragment() {
         isDataSetRus = !isDataSetRus
     }
 
+    //вызывается при изменении/обновлении LiveData.
     private fun renderData(data: AppState) {
         when (data) {
             is AppState.Success -> {

@@ -23,18 +23,23 @@ class DetailsViewModel(
     private val detailsRepository: DetailsRepository = DetailsRepositoryImpl(RemoteDataSource())
 ) : ViewModel() {
 
+    //вызывается фрагментом
     fun getWeatherFromRemoteSource(lat: Double, lon: Double) {
         detailsLiveData.value = AppState.Loading
+        //отправляет запрос на сервер
         detailsRepository.getWeatherDetailsFromServer(lat, lon, callBack)
     }
-
+    //отправляет запрос на сервер
     private val callBack = object : Callback<WeatherDTO> {
 
         @Throws(IOException::class)
         override fun onResponse(call: Call<WeatherDTO>, response: Response<WeatherDTO>) {
+            //вытаскиваем body
             val serverResponse: WeatherDTO? = response.body()
+            //передаем значение в main поток postValue
             detailsLiveData.postValue(
                 if (response.isSuccessful && serverResponse != null) {
+                    //возвращаем полученный с сервера список параметров
                     checkResponse(serverResponse)
                 } else {
                     AppState.Error(Throwable(SERVER_ERROR))
@@ -48,6 +53,7 @@ class DetailsViewModel(
     }
 
     fun checkResponse(serverResponse: WeatherDTO): AppState {
+        //приравниваем
         val fact: FactDTO? = serverResponse.fact
         return if (fact?.temp == null || fact.feels_like == null || fact.condition.isNullOrEmpty()) {
             AppState.Error(Throwable(CORRUPTED_DATA))

@@ -31,8 +31,10 @@ class DetailsFragment : Fragment() {
 
     private var _binding: DetailsFragmentBinding? = null
     private val binding get() = _binding!!
+    //записывает Bundle
     private lateinit var weatherBundle: Weather
 
+    //привязываем ViewModel
     private val viewModel: DetailsViewModel by lazy {
         ViewModelProvider(this).get(DetailsViewModel::class.java)
     }
@@ -54,11 +56,15 @@ class DetailsFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //записавает погоду переданую в Bundle
         weatherBundle = arguments?.getParcelable<Weather>(BUNDLE_EXTRA) ?: Weather()
-        viewModel.detailsLiveData.observe(viewLifecycleOwner) { renderData(it) }
+        //добавляем к ViewModel observe(отправляет/переписывает данные при их изменении)
+        viewModel.detailsLiveData.observe(viewLifecycleOwner, { renderData(it) })
+        //отправляем запрос в DetailsViewModel
         viewModel.getWeatherFromRemoteSource(weatherBundle.city.lat, weatherBundle.city.lon)
     }
 
+    //при изменении/отклике сервера
     private fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
@@ -80,6 +86,7 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    //вызывается при успехе
     private fun setWeather(weather: Weather) {
         with(binding) {
             weatherBundle.city.let { city ->
@@ -95,9 +102,11 @@ class DetailsFragment : Fragment() {
                 feelsLikeValue.text = it.feelsLike.toString()
                 weatherCondition.text = it.condition
             }
+            //загрузить картинку
             Picasso
                 .get()
                 .load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
+                    //это id в xml
                 .into(headerIcon)
         }
     }
