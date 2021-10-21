@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import ru.kostry.weather.app.App.Companion.getHistoryDao
 import ru.kostry.weather.model.AppState
+import ru.kostry.weather.model.data.Weather
 import ru.kostry.weather.model.data.convertDtoToModel
 import ru.kostry.weather.model.dto.FactDTO
 import ru.kostry.weather.model.dto.WeatherDTO
-import ru.kostry.weather.model.repository.DetailsRepository
-import ru.kostry.weather.model.repository.DetailsRepositoryImpl
-import ru.kostry.weather.model.repository.RemoteDataSource
+import ru.kostry.weather.model.repository.*
 import java.io.IOException
 
 private const val SERVER_ERROR = "Ошибка сервера"
@@ -20,7 +20,8 @@ private const val CORRUPTED_DATA = "Неполные данные"
 
 class DetailsViewModel(
     val detailsLiveData: MutableLiveData<AppState> = MutableLiveData(),
-    private val detailsRepository: DetailsRepository = DetailsRepositoryImpl(RemoteDataSource())
+    private val detailsRepository: DetailsRepository = DetailsRepositoryImpl(RemoteDataSource()),
+    private val historyRepository: LocalRepository = LocalRepositoryImpl(getHistoryDao())
 ) : ViewModel() {
 
     //вызывается фрагментом
@@ -29,6 +30,12 @@ class DetailsViewModel(
         //отправляет запрос на сервер
         detailsRepository.getWeatherDetailsFromServer(lat, lon, callBack)
     }
+
+    //сохранять новый запрос в БД
+    fun saveCityToDB(weather: Weather) {
+        historyRepository.saveEntity(weather)
+    }
+
     //отправляет запрос на сервер
     private val callBack = object : Callback<WeatherDTO> {
 

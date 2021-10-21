@@ -2,25 +2,19 @@ package ru.kostry.weather.view
 
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import okhttp3.*
-import ru.kostry.weather.BuildConfig
 import ru.kostry.weather.R
 import ru.kostry.weather.databinding.DetailsFragmentBinding
 import ru.kostry.weather.model.AppState
+import ru.kostry.weather.model.data.City
 import ru.kostry.weather.model.data.Weather
-import ru.kostry.weather.model.dto.WeatherDTO
 import ru.kostry.weather.viewmodel.DetailsViewModel
-import java.io.IOException
 
 private const val TEMP_INVALID = -100
 private const val FEELS_LIKE_INVALID = -100
@@ -31,10 +25,8 @@ class DetailsFragment : Fragment() {
 
     private var _binding: DetailsFragmentBinding? = null
     private val binding get() = _binding!!
-    //записывает Bundle
     private lateinit var weatherBundle: Weather
 
-    //привязываем ViewModel
     private val viewModel: DetailsViewModel by lazy {
         ViewModelProvider(this).get(DetailsViewModel::class.java)
     }
@@ -80,7 +72,10 @@ class DetailsFragment : Fragment() {
                 binding.main.show()
                 binding.loadingLayout.hide()
                 binding.main.showSnackBar(getString(R.string.error), getString(R.string.reload)) {
-                    viewModel.getWeatherFromRemoteSource(weatherBundle.city.lat, weatherBundle.city.lon)
+                    viewModel.getWeatherFromRemoteSource(
+                        weatherBundle.city.lat,
+                        weatherBundle.city.lon
+                    )
                 }
             }
         }
@@ -96,6 +91,8 @@ class DetailsFragment : Fragment() {
                     city.lat.toString(),
                     city.lon.toString()
                 )
+                //вызов сохранения города
+                saveCity(city, weather)
             }
             weather.let {
                 temperatureValue.text = it.temperature.toString()
@@ -106,9 +103,16 @@ class DetailsFragment : Fragment() {
             Picasso
                 .get()
                 .load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
-                    //это id в xml
+                //это id в xml
                 .into(headerIcon)
         }
+    }
+
+    private fun saveCity(city: City, weather: Weather) {
+        viewModel.saveCityToDB(
+            Weather(city, weather.temperature, weather.feelsLike, weather.condition
+            )
+        )
     }
 
     companion object {

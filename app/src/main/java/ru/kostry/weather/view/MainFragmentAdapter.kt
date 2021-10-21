@@ -22,6 +22,7 @@ class MainFragmentAdapter :
     fun setWeather(data: List<Weather>) {
         weatherData = data
         //после установки данных, вызов изменений списка в xml
+        //Когда мы у адаптера RecyclerView вызываем метод notifyDataSetChanged, то адаптер перерисует все элементы списка.
         notifyDataSetChanged()
     }
 
